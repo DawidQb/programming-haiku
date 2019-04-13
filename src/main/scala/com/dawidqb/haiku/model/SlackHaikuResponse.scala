@@ -1,35 +1,22 @@
 package com.dawidqb.haiku.model
 
+import cats.effect.IO
+import io.circe.generic.auto._
+import org.http4s.EntityEncoder
+import org.http4s.circe._
+
 final case class SlackHaikuResponse(
                                      text: String,
                                      attachments: List[SlackAttachment],
-                                     response_type: Option[String] = Some("in_channel")
+                                     delete_original: Boolean = false,
+                                     response_type: String = "ephemeral"
                                    )
 
-final case class SlackAttachment(
-                                  text: String,
-                                  fallback: String,
-                                  callback_id: String,
-                                  actions: List[SlackAction],
-                                  color: String = "#3AA3E3"
-                                )
+object SlackHaikuResponse {
 
-final case class SlackAction(
-                              name: String,
-                              text: String,
-                              value: String,
-                              style: Option[String] = None,
-                              `type`: String = "button",
-                            )
+  implicit val encoder: EntityEncoder[IO, SlackHaikuResponse] = jsonEncoderOf[IO, SlackHaikuResponse]
 
-object SlackAction {
-
-  private val greatText = "Wspaniałe 😊"
-  private val mediocreText = "Takie sobie 😐"
-  private val badText = "Słabizna 🙄"
-
-  val greatRatingButton = SlackAction("rating", greatText, "great", Some("primary"))
-  val mediocreRatingButton = SlackAction("rating", mediocreText, "mediocre")
-  val badRatingButton = SlackAction("rating", badText, "bad", Some("danger"))
-
+  val DeleteOriginal = SlackHaikuResponse("", Nil, delete_original = true)
 }
+
+
