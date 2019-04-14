@@ -3,20 +3,36 @@ package com.dawidqb.haiku
 import java.util.UUID
 
 import cats.effect.IO
-import com.dawidqb.haiku.model.HaikuId
+import com.dawidqb.haiku.model.{HaikuId, Language}
 
 import scala.io.Source
 import scala.util.Random
 
 object HaikuGenerator {
 
-  private val fiveSyllablesLines = Source.fromResource("five_syllables.txt").getLines.toList
-  private val sevenSyllablesLines = Source.fromResource("seven_syllables.txt").getLines.toList
+  private val enFiveSyllablesLines = Source.fromResource("en/five_syllables.txt").getLines.toList
+  private val enSevenSyllablesLines = Source.fromResource("en/seven_syllables.txt").getLines.toList
 
-  val generateHaiku: IO[String] = IO {
-    val first = fiveSyllablesLines(Random.nextInt(fiveSyllablesLines.size))
-    val second = sevenSyllablesLines(Random.nextInt(sevenSyllablesLines.size))
-    val third = fiveSyllablesLines(Random.nextInt(fiveSyllablesLines.size))
+  private val plFiveSyllablesLines = Source.fromResource("pl/five_syllables.txt").getLines.toList
+  private val plSevenSyllablesLines = Source.fromResource("pl/seven_syllables.txt").getLines.toList
+
+  private def fiveSyllablesLines(language: Language) = language match {
+    case Language.EN => enFiveSyllablesLines
+    case Language.PL => plFiveSyllablesLines
+  }
+
+  private def sevenSyllablesLines(language: Language) = language match {
+    case Language.EN => enSevenSyllablesLines
+    case Language.PL => plSevenSyllablesLines
+  }
+
+  def generateHaiku(language: Language): IO[String] = IO {
+    val fiveSyl = fiveSyllablesLines(language)
+    val sevenSyl = sevenSyllablesLines(language)
+
+    val first = fiveSyl(Random.nextInt(fiveSyl.size))
+    val second = sevenSyl(Random.nextInt(sevenSyl.size))
+    val third = fiveSyl(Random.nextInt(fiveSyl.size))
     List(first, second, third).mkString("\n")
   }
 

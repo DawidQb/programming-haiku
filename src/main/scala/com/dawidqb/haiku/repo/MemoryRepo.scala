@@ -3,18 +3,18 @@ package com.dawidqb.haiku.repo
 import java.time.Instant
 
 import cats.effect.IO
-import com.dawidqb.haiku.model.{HaikuData, HaikuId}
+import com.dawidqb.haiku.model.{HaikuData, HaikuId, Language}
 
 class MemoryRepo extends HaikuRepo {
 
   import MemoryRepo._
 
-  override def insertHaiku(haikuId: HaikuId, haiku: String): IO[Unit] = IO.pure {
-    if (!memory.contains(haikuId)) memory += haikuId -> HaikuData(haiku, Instant.now())
+  override def insertHaiku(haikuId: HaikuId, haiku: String, language: Language): IO[Unit] = IO {
+    if (!memory.contains(haikuId)) memory += haikuId -> HaikuData(haiku, language, Instant.now())
   }
 
-  override def findHaiku(haikuId: HaikuId): IO[Option[String]] = IO.pure {
-    memory.get(haikuId).map(_.haiku)
+  override def findHaikuData(haikuId: HaikuId): IO[Option[HaikuData]] = IO {
+    memory.get(haikuId)
   }
 
 

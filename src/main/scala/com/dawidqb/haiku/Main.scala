@@ -16,13 +16,21 @@ object Main extends IOApp {
   private val haikuService = new HaikuService(haikuRepo)
 
   private val haikuRoutes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+    case GET -> Root =>
+      println("Received request!")
+      Ok("Hello!")
+
     case request@POST -> Root / "haiku" =>
-      request.as[SlackRequestForm] *>
-        Ok(haikuService.createHaiku)
+      for {
+        req <- request.as[SlackCommandRequest]
+        _ = println(s"Received haiku request $req")
+        res <- Ok(haikuService.handleCommand(req))
+      } yield res
 
     case request@POST -> Root / "select" =>
       for {
         req <- request.as[SlackSelectRequest]
+        _ = println(s"Received select request $req")
         res <- Ok(haikuService.handleSelection(req))
       } yield res
   }
