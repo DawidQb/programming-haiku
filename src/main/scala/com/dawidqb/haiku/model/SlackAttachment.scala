@@ -1,5 +1,7 @@
 package com.dawidqb.haiku.model
 
+import com.typesafe.config.ConfigFactory
+
 final case class SlackAttachment(
                                   text: String,
                                   fallback: String,
@@ -10,15 +12,22 @@ final case class SlackAttachment(
 
 object SlackAttachment {
 
-  private val selectionActions: List[SlackActionButton] =
-    List(SlackActionButton.sendButton, SlackActionButton.shuffleButton, SlackActionButton.cancelButton)
+  private val messagesConfig = ConfigFactory.load().getConfig("messages")
+  private def configForLanguage(language: Language) = messagesConfig.getConfig(language.entryName)
 
-  def attachmentForHaiku(haikuId: HaikuId): List[SlackAttachment] =
+  private def selectionActions(language: Language): List[SlackActionButton] =
+    List(
+      SlackActionButton.sendButton(language),
+      SlackActionButton.shuffleButton(language),
+      SlackActionButton.cancelButton(language)
+    )
+
+  def attachmentForHaiku(haikuId: HaikuId, language: Language): List[SlackAttachment] =
     List(SlackAttachment(
-      text = "Czy powyższe haiku jest odpowiednie do wysłania?",
-      fallback = "Nie jesteś w stanie wybrać haiku",
+      text = configForLanguage(language).getString("question"),
+      fallback = configForLanguage(language).getString("question-fallback"),
       callback_id = haikuId.value.toString,
-      actions = selectionActions
+      actions = selectionActions(language)
     ))
 
 }

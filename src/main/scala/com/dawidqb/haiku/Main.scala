@@ -5,6 +5,7 @@ import cats.effect._
 import cats.implicits._
 import com.dawidqb.haiku.model._
 import com.dawidqb.haiku.repo.MemoryRepo
+import com.typesafe.config.ConfigFactory
 import org.http4s._
 import org.http4s.dsl.io._
 import org.http4s.server.Router
@@ -12,6 +13,7 @@ import org.http4s.server.blaze._
 
 object Main extends IOApp {
 
+  private val config = ConfigFactory.load()
   private val haikuRepo = new MemoryRepo
   private val haikuService = new HaikuService(haikuRepo)
 
@@ -39,7 +41,7 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO]
-      .bindHttp(5000, "127.0.0.1")
+      .bindHttp(config.getInt("port"), config.getString("host"))
       .withHttpApp(httpApp)
       .serve
       .compile

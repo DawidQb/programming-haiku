@@ -12,7 +12,7 @@ class HaikuService(haikuRepo: HaikuRepo) {
     haiku <- HaikuGenerator.generateHaiku(language)
     haikuId <- HaikuGenerator.generateHaikuId
     _ <- haikuRepo.insertHaiku(haikuId, haiku, language)
-  } yield SlackHaikuResponse(haiku, SlackAttachment.attachmentForHaiku(haikuId))
+  } yield SlackHaikuResponse(haiku, SlackAttachment.attachmentForHaiku(haikuId, language))
 
   def handleCommand(request: SlackCommandRequest): IO[SlackHaikuResponse] =
     if (request.text.trim.isEmpty) {
@@ -34,7 +34,7 @@ class HaikuService(haikuRepo: HaikuRepo) {
         } yield SlackHaikuResponse(haiku, Nil, delete_original = true, response_type = "in_channel")
       case "shuffle" =>
         for {
-          language <- haikuRepo.findHaikuData(haikuId).map(_.map(_.language).getOrElse(Language.EN))
+          language <- haikuRepo.findHaikuData(haikuId).map(_.map(_.language).getOrElse(Language.en))
           response <- createHaiku(language)
         } yield response
       case _ =>

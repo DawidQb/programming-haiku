@@ -1,5 +1,7 @@
 package com.dawidqb.haiku.model
 
+import com.typesafe.config.ConfigFactory
+
 final case class SlackActionButton(
                                     name: String,
                                     text: String,
@@ -11,12 +13,14 @@ final case class SlackActionButton(
 
 object SlackActionButton {
 
-  private val sendText = "Wyślij \uD83D\uDE0A"
-  private val shuffleText = "Wygeneruj nowe \uD83D\uDD04"
-  private val cancelText = "Anuluj ❌"
+  private val messagesConfig = ConfigFactory.load().getConfig("messages")
+  private def configForLanguage(language: Language) = messagesConfig.getConfig(language.entryName)
 
-  val sendButton = SlackActionButton("selection", sendText, "send", "1", Some("primary"))
-  val shuffleButton = SlackActionButton("selection", shuffleText, "shuffle", "2")
-  val cancelButton = SlackActionButton("selection", cancelText, "cancel", "3", Some("danger"))
+  def sendButton(language: Language) =
+    SlackActionButton("selection", configForLanguage(language).getString("send"), "send", "1", Some("primary"))
+  def shuffleButton(language: Language) =
+    SlackActionButton("selection", configForLanguage(language).getString("shuffle"), "shuffle", "2")
+  def cancelButton(language: Language) =
+    SlackActionButton("selection", configForLanguage(language).getString("cancel"), "cancel", "3", Some("danger"))
 
 }

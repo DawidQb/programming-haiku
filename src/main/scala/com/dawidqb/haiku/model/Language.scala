@@ -5,11 +5,11 @@ import enumeratum._
 
 sealed trait Language extends EnumEntry
 
-object Language extends Enum[Language] with CirceEnum[Language] with Lowercase {
+object Language extends Enum[Language] with Lowercase { // FIXME Lowercase doesn't seem to work
 
   val values = findValues
 
-  case object PL extends Language
-  case object EN extends Language
+  case object pl extends Language
+  case object en extends Language
 
 }

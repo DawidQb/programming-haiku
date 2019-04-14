@@ -16,12 +16,14 @@ object SlackHaikuResponse {
 
   implicit val encoder: EntityEncoder[IO, SlackHaikuResponse] = jsonEncoderOf[IO, SlackHaikuResponse]
 
+  private val supportedLanguages = Language.values.map(_.entryName)
+
   val DeleteOriginal = SlackHaikuResponse("", delete_original = true)
   val MissingLanguage = SlackHaikuResponse(
-    """|*Missing language parameter*
-       |*Usage*: /haiku [language code]
-       |(Supported languages: en, pl)""".stripMargin)
-  val InvalidLanguage = SlackHaikuResponse("Unrecognized or unsupported language. Accepted values: en, pl")
+    s"""|*Missing language parameter*
+        |*Usage*: /haiku [language code]    (Supported languages: ${supportedLanguages.mkString(", ")})""".stripMargin)
+  val InvalidLanguage = SlackHaikuResponse(
+    s"Unrecognized or unsupported language. Accepted values: ${supportedLanguages.mkString(", ")}")
 }
 
 
