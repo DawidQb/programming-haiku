@@ -23,9 +23,17 @@ object Main extends IOApp {
       println("Received request!")
       Ok("Hello!")
 
-    case GET -> Root / "oauth" =>
+    case request@GET -> Root / "oauth" =>
       println("Received OAuth request!")
-      Found(Location(Uri.uri("/redirect")))
+      request.params.get("code") match {
+        case None =>
+          println(s"Failed Oauth! Params: ${request.params}")
+          Found(Location(Uri.uri("/redirect")))
+        case Some(code) =>
+          println("Successful Oauth!")
+          haikuService.handleOauth(code)/*.map(println)*/ *>
+            Found(Location(Uri.uri("/redirect")))
+      }
 
     case request@POST -> Root / "haiku" =>
       for {
