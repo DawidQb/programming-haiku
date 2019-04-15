@@ -16,3 +16,5 @@ kubernetesy rządzą
 znów null pointer exception
 niech działa cały weekend
 herbatka z hibiskusa
+jutro robimy release
+zrobione issue w Jirze

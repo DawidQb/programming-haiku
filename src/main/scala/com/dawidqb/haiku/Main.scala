@@ -8,6 +8,7 @@ import com.dawidqb.haiku.repo.MemoryRepo
 import com.typesafe.config.ConfigFactory
 import org.http4s._
 import org.http4s.dsl.io._
+import org.http4s.headers.Location
 import org.http4s.server.Router
 import org.http4s.server.blaze._
 
@@ -21,6 +22,10 @@ object Main extends IOApp {
     case GET -> Root =>
       println("Received request!")
       Ok("Hello!")
+
+    case GET -> Root / "oauth" =>
+      println("Received OAuth request!")
+      Found(Location(Uri.uri("/redirect")))
 
     case request@POST -> Root / "haiku" =>
       for {
@@ -37,7 +42,7 @@ object Main extends IOApp {
       } yield res
   }
 
-  private val httpApp: Kleisli[IO, Request[IO], Response[IO]] = Router("/" -> haikuRoutes).orNotFound
+  private val httpApp: Kleisli[IO, Request[IO], Response[IO]] = Router("/api" -> haikuRoutes).orNotFound
 
   override def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO]

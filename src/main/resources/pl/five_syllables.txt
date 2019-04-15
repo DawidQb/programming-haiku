@@ -17,3 +17,7 @@ przerwa na obiad
 Akka i Catsy
 aplikacja działa
 rozlana kawa
+cudna Kibana
+grepuję logi
+czysta monada
+rozum i godność
