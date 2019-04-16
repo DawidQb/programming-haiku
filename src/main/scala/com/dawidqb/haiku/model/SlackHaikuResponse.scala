@@ -19,7 +19,7 @@ object SlackHaikuResponse {
   implicit val decoder: Decoder[SlackHaikuResponse] = deriveDecoder[SlackHaikuResponse]
   implicit val encoder: Encoder[SlackHaikuResponse] = deriveEncoder[SlackHaikuResponse]
 
-  implicit val entittEncoder: EntityEncoder[IO, SlackHaikuResponse] = jsonEncoderOf[IO, SlackHaikuResponse]
+  implicit val entityEncoder: EntityEncoder[IO, SlackHaikuResponse] = jsonEncoderOf[IO, SlackHaikuResponse]
 
   private val supportedLanguages = Language.values.map(_.entryName)
 
