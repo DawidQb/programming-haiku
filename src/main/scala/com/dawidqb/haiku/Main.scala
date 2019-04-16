@@ -16,8 +16,10 @@ object Main extends IOApp {
   private val haikuRepo = new MemoryRepo
   private val haikuService = new HaikuService(haikuRepo)
   private val haikuRoutes = new HaikuRoutes(haikuService)
+  private val adminRoutes = new AdminRoutes(haikuRepo)
 
-  private val httpApp: Kleisli[IO, Request[IO], Response[IO]] = Router("/api" -> haikuRoutes.routes).orNotFound
+  private val httpApp: Kleisli[IO, Request[IO], Response[IO]] =
+    Router("/api" -> haikuRoutes.routes, "/api/admin" -> adminRoutes.routes).orNotFound
 
   override def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO]

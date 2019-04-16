@@ -20,12 +20,6 @@ class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] {
   private val clientId = config.getString("client-id")
   private val clientSecret = config.getString("client-secret")
 
-  def createHaiku(language: Language): IO[SlackHaikuResponse] = for {
-    haiku <- HaikuGenerator.generateHaiku(language)
-    haikuId <- HaikuGenerator.generateHaikuId
-    _ <- haikuRepo.insertHaiku(haikuId, haiku, language)
-  } yield SlackHaikuResponse(haiku, SlackAttachment.attachmentForHaiku(haikuId, language))
-
   def handleOauth(code: String)(implicit cs: ContextShift[IO]): IO[String] = {
     val uri = Uri.uri("https://slack.com/api/oauth.access")
     val body = UrlForm(
@@ -64,5 +58,12 @@ class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] {
         IO.pure(SlackHaikuResponse.DeleteOriginal)
     }
   }
+
+  private def createHaiku(language: Language): IO[SlackHaikuResponse] = for {
+    haiku <- HaikuGenerator.generateHaiku(language)
+    haikuId <- HaikuGenerator.generateHaikuId
+    _ <- haikuRepo.insertHaiku(haikuId, haiku, language)
+  } yield SlackHaikuResponse(haiku, SlackAttachment.attachmentForHaiku(haikuId, language))
+
 
 }
