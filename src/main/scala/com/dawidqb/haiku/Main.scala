@@ -3,12 +3,10 @@ package com.dawidqb.haiku
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import com.dawidqb.haiku.model._
 import com.dawidqb.haiku.repo.MemoryRepo
 import com.typesafe.config.ConfigFactory
 import org.http4s._
 import org.http4s.dsl.io._
-import org.http4s.headers.Location
 import org.http4s.server.Router
 import org.http4s.server.blaze._
 
@@ -17,40 +15,9 @@ object Main extends IOApp {
   private val config = ConfigFactory.load()
   private val haikuRepo = new MemoryRepo
   private val haikuService = new HaikuService(haikuRepo)
+  private val haikuRoutes = new HaikuRoutes(haikuService)
 
-  private val haikuRoutes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root =>
-      println("Received request!")
-      Ok("Hello!")
-
-    case request@GET -> Root / "oauth" =>
-      println("Received OAuth request!")
-      request.params.get("code") match {
-        case None =>
-          println(s"Failed Oauth! Params: ${request.params}")
-          Found(Location(Uri.uri("/redirect")))
-        case Some(code) =>
-          println("Successful Oauth!")
-          haikuService.handleOauth(code)/*.map(println)*/ *>
-            Found(Location(Uri.uri("/redirect")))
-      }
-
-    case request@POST -> Root / "haiku" =>
-      for {
-        req <- request.as[SlackCommandRequest]
-        _ = println(s"Received haiku request $req")
-        res <- Ok(haikuService.handleCommand(req))
-      } yield res
-
-    case request@POST -> Root / "select" =>
-      for {
-        req <- request.as[SlackSelectRequest]
-        _ = println(s"Received select request $req")
-        res <- Ok(haikuService.handleSelection(req))
-      } yield res
-  }
-
-  private val httpApp: Kleisli[IO, Request[IO], Response[IO]] = Router("/api" -> haikuRoutes).orNotFound
+  private val httpApp: Kleisli[IO, Request[IO], Response[IO]] = Router("/api" -> haikuRoutes.routes).orNotFound
 
   override def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO]

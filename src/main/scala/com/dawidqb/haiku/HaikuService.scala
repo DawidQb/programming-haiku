@@ -3,6 +3,7 @@ package com.dawidqb.haiku
 import java.util.UUID
 
 import cats.effect.{ContextShift, IO}
+import com.dawidqb.haiku.model.ResponseType.InChannel
 import com.dawidqb.haiku.model._
 import com.dawidqb.haiku.repo.HaikuRepo
 import com.typesafe.config.ConfigFactory
@@ -47,19 +48,19 @@ class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] {
     }
 
   def handleSelection(request: SlackSelectRequest): IO[SlackHaikuResponse] = {
-    val actionValue = request.actions.headOption.map(_.value).getOrElse("send")
+    val actionValue = request.actions.headOption.map(_.value).getOrElse(ActionValue.Cancel)
     val haikuId = HaikuId(UUID.fromString(request.callback_id))
     actionValue match {
-      case "send" =>
+      case ActionValue.Send =>
         for {
           haiku <- haikuRepo.findHaikuData(haikuId).map(_.map(_.haiku).getOrElse(""))
-        } yield SlackHaikuResponse(haiku, Nil, delete_original = true, response_type = "in_channel")
-      case "shuffle" =>
+        } yield SlackHaikuResponse(haiku, Nil, delete_original = true, response_type = InChannel)
+      case ActionValue.Shuffle =>
         for {
-          language <- haikuRepo.findHaikuData(haikuId).map(_.map(_.language).getOrElse(Language.en))
+          language <- haikuRepo.findHaikuData(haikuId).map(_.map(_.language).getOrElse(Language.EN))
           response <- createHaiku(language)
         } yield response
-      case _ =>
+      case ActionValue.Cancel =>
         IO.pure(SlackHaikuResponse.DeleteOriginal)
     }
   }

@@ -1,6 +1,8 @@
 package com.dawidqb.haiku.model
 
 import com.typesafe.config.ConfigFactory
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto._
 
 final case class SlackAttachment(
                                   text: String,
@@ -11,6 +13,9 @@ final case class SlackAttachment(
                                 )
 
 object SlackAttachment {
+
+  implicit val decoder: Decoder[SlackAttachment] = deriveDecoder[SlackAttachment]
+  implicit val encoder: Encoder[SlackAttachment] = deriveEncoder[SlackAttachment]
 
   private val messagesConfig = ConfigFactory.load().getConfig("messages")
   private def configForLanguage(language: Language) = messagesConfig.getConfig(language.entryName)

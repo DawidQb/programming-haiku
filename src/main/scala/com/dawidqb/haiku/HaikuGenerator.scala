@@ -17,13 +17,13 @@ object HaikuGenerator {
   private val plSevenSyllablesLines = Source.fromResource("pl/seven_syllables.txt").getLines.toList
 
   private def fiveSyllablesLines(language: Language) = language match {
-    case Language.`en` => enFiveSyllablesLines
-    case Language.`pl` => plFiveSyllablesLines
+    case Language.EN => enFiveSyllablesLines
+    case Language.PL => plFiveSyllablesLines
   }
 
   private def sevenSyllablesLines(language: Language) = language match {
-    case Language.`en` => enSevenSyllablesLines
-    case Language.`pl` => plSevenSyllablesLines
+    case Language.EN => enSevenSyllablesLines
+    case Language.PL => plSevenSyllablesLines
   }
 
   def generateHaiku(language: Language): IO[String] = IO {
