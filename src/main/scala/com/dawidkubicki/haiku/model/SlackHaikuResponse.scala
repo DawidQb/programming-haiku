@@ -1,7 +1,7 @@
-package com.dawidqb.haiku.model
+package com.dawidkubicki.haiku.model
 
 import cats.effect.IO
-import com.dawidqb.haiku.model.ResponseType._
+import com.dawidkubicki.haiku.model.ResponseType._
 import io.circe._
 import io.circe.generic.semiauto._
 import org.http4s.EntityEncoder

@@ -1,9 +1,9 @@
-package com.dawidqb.haiku.repo
+package com.dawidkubicki.haiku.repo
 
 import java.time.Instant
 
 import cats.effect.IO
-import com.dawidqb.haiku.model.{HaikuData, HaikuId, Language}
+import com.dawidkubicki.haiku.model.{HaikuData, HaikuId, Language}
 
 trait HaikuRepo {
 

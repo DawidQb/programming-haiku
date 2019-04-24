@@ -21,11 +21,14 @@ libraryDependencies ++= Seq(
   "com.beachape" %% "enumeratum-circe" % "1.5.21",
   "com.typesafe" % "config" % "1.3.2",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
-  "ch.qos.logback" % "logback-classic" % "1.2.3"
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
+  "io.gatling.highcharts" % "gatling-charts-highcharts" % "3.1.1" % "test,it",
+  "io.gatling" % "gatling-test-framework" % "3.1.1" % "test,it"
 )
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.6")
 
+enablePlugins(GatlingPlugin)
 
 assembly / test := {}
 assembly / assemblyJarName := "app.jar"

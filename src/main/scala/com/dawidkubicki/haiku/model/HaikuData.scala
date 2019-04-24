@@ -1,4 +1,4 @@
-package com.dawidqb.haiku.model
+package com.dawidkubicki.haiku.model
 
 import java.time.Instant
 

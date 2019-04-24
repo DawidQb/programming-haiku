@@ -1,8 +1,8 @@
-package com.dawidqb.haiku
+package com.dawidkubicki.haiku
 
 import cats.effect._
 import cats.implicits._
-import com.dawidqb.haiku.model.{SlackCommandRequest, SlackSelectRequest}
+import com.dawidkubicki.haiku.model.{SlackCommandRequest, SlackSelectRequest}
 import com.typesafe.scalalogging.LazyLogging
 import org.http4s.dsl.io._
 import org.http4s.headers.Location
@@ -28,18 +28,18 @@ class HaikuRoutes(haikuService: HaikuService)(implicit val cs: ContextShift[IO])
       }
 
     case request@POST -> Root / "haiku" =>
-      for {
-        req <- request.as[SlackCommandRequest]
-        _ = logger.info(s"Received haiku request $req")
-        res <- Ok(haikuService.handleCommand(req))
-      } yield res
+      logger.info(s"Received /haiku request $request")
+      request.attemptAs[SlackCommandRequest].value.flatMap {
+        case Left(error) => BadRequest(error.getMessage())
+        case Right(req) => Ok(haikuService.handleCommand(req))
+      }
 
     case request@POST -> Root / "select" =>
-      for {
-        req <- request.as[SlackSelectRequest]
-        _ = logger.info(s"Received select request $req")
-        res <- Ok(haikuService.handleSelection(req))
-      } yield res
+      logger.info(s"Received /select request $request")
+      request.attemptAs[SlackSelectRequest].value.flatMap {
+        case Left(error) => BadRequest(error.getMessage())
+        case Right(req) => Ok(haikuService.handleSelection(req))
+      }
   }
 
 }

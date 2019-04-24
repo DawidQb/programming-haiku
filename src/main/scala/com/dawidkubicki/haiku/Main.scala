@@ -1,9 +1,9 @@
-package com.dawidqb.haiku
+package com.dawidkubicki.haiku
 
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import com.dawidqb.haiku.repo.MemoryRepo
+import com.dawidkubicki.haiku.repo.MemoryRepo
 import com.typesafe.config.ConfigFactory
 import org.http4s._
 import org.http4s.dsl.io._

@@ -1,6 +1,6 @@
-package com.dawidqb.haiku.model
+package com.dawidkubicki.haiku.model
 
-import com.dawidqb.haiku.model.ActionValue.{Cancel, Send, Shuffle}
+import com.dawidkubicki.haiku.model.ActionValue.{Cancel, Send, Shuffle}
 import com.typesafe.config.ConfigFactory
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}

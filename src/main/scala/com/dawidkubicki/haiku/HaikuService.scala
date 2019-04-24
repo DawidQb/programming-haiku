@@ -1,12 +1,13 @@
-package com.dawidqb.haiku
+package com.dawidkubicki.haiku
 
 import java.util.UUID
 
 import cats.effect.{ContextShift, IO}
-import com.dawidqb.haiku.model.ResponseType.InChannel
-import com.dawidqb.haiku.model._
-import com.dawidqb.haiku.repo.HaikuRepo
+import com.dawidkubicki.haiku.model.ResponseType.InChannel
+import com.dawidkubicki.haiku.model._
+import com.dawidkubicki.haiku.repo.HaikuRepo
 import com.typesafe.config.ConfigFactory
+import com.typesafe.scalalogging.LazyLogging
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.io._
@@ -14,7 +15,7 @@ import org.http4s.{Uri, UrlForm}
 
 import scala.concurrent.ExecutionContext.global
 
-class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] {
+class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] with LazyLogging {
 
   private val config = ConfigFactory.load()
   private val clientId = config.getString("client-id")
@@ -31,7 +32,8 @@ class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] {
     BlazeClientBuilder[IO](global).resource.use { _.expect[String](request) }
   }
 
-  def handleCommand(request: SlackCommandRequest): IO[SlackHaikuResponse] =
+  def handleCommand(request: SlackCommandRequest): IO[SlackHaikuResponse] = {
+    logger.info(s"Handling SlackCommandRequest $request")
     if (request.text.trim.isEmpty) {
       IO.pure(SlackHaikuResponse.MissingLanguage)
     } else {
@@ -40,8 +42,10 @@ class HaikuService(haikuRepo: HaikuRepo) extends Http4sClientDsl[IO] {
         case Some(lang) => createHaiku(lang)
       }
     }
+  }
 
   def handleSelection(request: SlackSelectRequest): IO[SlackHaikuResponse] = {
+    logger.info(s"Handling SlackSelectRequest $request")
     val actionValue = request.actions.headOption.map(_.value).getOrElse(ActionValue.Cancel)
     val haikuId = HaikuId(UUID.fromString(request.callback_id))
     actionValue match {

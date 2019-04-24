@@ -1,4 +1,4 @@
-package com.dawidqb.haiku.model
+package com.dawidkubicki.haiku.model
 
 import cats.effect.IO
 import org.http4s.{EntityDecoder, UrlForm}

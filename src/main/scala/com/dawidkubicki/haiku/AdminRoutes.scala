@@ -1,8 +1,9 @@
-package com.dawidqb.haiku
+package com.dawidkubicki.haiku
 
 import cats.data._
 import cats.effect._
-import com.dawidqb.haiku.repo.HaikuRepo
+import com.dawidkubicki.haiku.model.AdminRequest
+import com.dawidkubicki.haiku.repo.HaikuRepo
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 import org.http4s._
@@ -22,14 +23,22 @@ class AdminRoutes(haikuRepo: HaikuRepo) extends LazyLogging {
   }
   private val onFailure: AuthedService[String, IO] = Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
 
-  val middleware: AuthMiddleware[IO, Unit] = AuthMiddleware(authUser, onFailure)
+  private val middleware: AuthMiddleware[IO, Unit] = AuthMiddleware(authUser, onFailure)
 
-  val routes = middleware(AuthedService {
-      case GET -> Root / "haikus" as _ =>
-        logger.info("Received admin haikus request!")
-        haikuRepo.listHaikus(None, None)
-          .map(_.map(_.haiku).mkString("\n\n"))
-          .flatMap(Ok(_))
-    })
+  val routes: ReaderT[OptionT[IO, ?], Request[IO], Response[IO]] = middleware(AuthedService {
+    case request@POST -> Root / "write" as _ =>
+      for {
+        req <- request.req.as[AdminRequest]
+        _ = logger.info(s"Received admin haikus request! $req")
+        res <- req.file match {
+          case None =>
+            Ok(haikuRepo.listHaikus(req.dateFrom, req.dateTo).map(_.map(_.haiku).mkString("\n\n")))
+          case Some(file) =>
+
+            Ok(haikuRepo.listHaikus(req.dateFrom, req.dateTo).map(_.map(_.haiku).mkString("\n\n")))
+        }
+
+      } yield res
+  })
 
 }
