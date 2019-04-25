@@ -1,9 +1,7 @@
 package com.dawidkubicki.haiku
 
-import java.util.UUID
-
 import cats.effect.IO
-import com.dawidkubicki.haiku.model.{HaikuId, Language}
+import com.dawidkubicki.haiku.model.Language
 
 import scala.io.Source
 import scala.util.Random
@@ -34,10 +32,6 @@ object HaikuGenerator {
     val second = sevenSyl(Random.nextInt(sevenSyl.length))
     val third = fiveSyl(Random.nextInt(fiveSyl.length))
     List(first, second, third).mkString("\n")
-  }
-
-  val generateHaikuId: IO[HaikuId] = IO {
-    HaikuId(UUID.randomUUID())
   }
 
 }

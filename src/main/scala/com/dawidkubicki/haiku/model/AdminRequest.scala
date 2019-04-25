@@ -10,8 +10,7 @@ import org.http4s.circe._
 
 final case class AdminRequest(
                                 dateFrom: Option[Instant],
-                                dateTo: Option[Instant],
-                                file: Option[String]
+                                dateTo: Option[Instant]
                              )
 
 object AdminRequest {

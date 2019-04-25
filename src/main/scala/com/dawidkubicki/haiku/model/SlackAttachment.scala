@@ -1,5 +1,6 @@
 package com.dawidkubicki.haiku.model
 
+import com.dawidkubicki.haiku.model.db.HaikuId
 import com.typesafe.config.ConfigFactory
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._

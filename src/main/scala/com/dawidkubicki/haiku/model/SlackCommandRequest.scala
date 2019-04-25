@@ -15,15 +15,20 @@ final case class SlackCommandRequest(
 
 object SlackCommandRequest {
 
+  implicit class UrlFormOps(urlForm: UrlForm) {
+    def getOrEmptyString(key: String): String =
+      urlForm.values.get(key).toList.flatten.headOption.getOrElse("")
+  }
+
   def apply(urlForm: UrlForm): SlackCommandRequest =
     SlackCommandRequest(
-      command = urlForm.values("command").headOption.getOrElse(""),
-      text = urlForm.values("text").headOption.getOrElse("").toLowerCase,
-      userId = UserId(urlForm.values("user_id").headOption.getOrElse("")),
-      userName = urlForm.values("user_name").headOption.getOrElse(""),
-      teamId = urlForm.values("team_id").headOption.getOrElse(""),
-      teamDomain = urlForm.values("team_domain").headOption.getOrElse(""),
-      responseUrl = urlForm.values("response_url").headOption.getOrElse("")
+      command = urlForm.getOrEmptyString("command"),
+      text = urlForm.getOrEmptyString("text").toLowerCase,
+      userId = UserId(urlForm.getOrEmptyString("user_id")),
+      userName = urlForm.getOrEmptyString("user_name"),
+      teamId = urlForm.getOrEmptyString("team_id"),
+      teamDomain = urlForm.getOrEmptyString("team_domain"),
+      responseUrl = urlForm.getOrEmptyString("response_url")
     )
 
   implicit val decoder: EntityDecoder[IO, SlackCommandRequest] =

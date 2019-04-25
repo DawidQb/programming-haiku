@@ -18,7 +18,7 @@ class HaikuGenerationSimulation extends Simulation {
   private val feeder = Iterator.continually(Map("lang" -> languages(Random.nextInt(languages.size))))
 
   val httpProtocol: HttpProtocolBuilder = http
-    .baseUrl("https://haiku.dawidkubicki.com/api")
+    .baseUrl("https://269ff330.ngrok.io/api")
     .acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .doNotTrackHeader("1")
     .userAgentHeader("Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0")
@@ -34,6 +34,6 @@ class HaikuGenerationSimulation extends Simulation {
     .pause(5.seconds)
 
   setUp(
-    scn.inject(rampUsers(1000) during 10.seconds)
+    scn.inject(rampUsers(100) during 10.seconds)
   ).protocols(httpProtocol)
 }

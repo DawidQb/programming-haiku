@@ -1,4 +1,4 @@
-package com.dawidkubicki.haiku.model
+package com.dawidkubicki.haiku.model.db
 
 import java.util.UUID
 

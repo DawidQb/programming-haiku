@@ -26,18 +26,11 @@ class AdminRoutes(haikuRepo: HaikuRepo) extends LazyLogging {
   private val middleware: AuthMiddleware[IO, Unit] = AuthMiddleware(authUser, onFailure)
 
   val routes: ReaderT[OptionT[IO, ?], Request[IO], Response[IO]] = middleware(AuthedService {
-    case request@POST -> Root / "write" as _ =>
+    case request@POST -> Root / "list" as _ =>
       for {
         req <- request.req.as[AdminRequest]
         _ = logger.info(s"Received admin haikus request! $req")
-        res <- req.file match {
-          case None =>
-            Ok(haikuRepo.listHaikus(req.dateFrom, req.dateTo).map(_.map(_.haiku).mkString("\n\n")))
-          case Some(file) =>
-
-            Ok(haikuRepo.listHaikus(req.dateFrom, req.dateTo).map(_.map(_.haiku).mkString("\n\n")))
-        }
-
+        res <- Ok(haikuRepo.list(req.dateFrom, req.dateTo).map(_.map(_.haiku).mkString("\n\n")))
       } yield res
   })
 

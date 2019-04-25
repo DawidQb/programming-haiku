@@ -1,16 +1,18 @@
 package com.dawidkubicki.haiku.repo
 
 import java.time.Instant
+import java.util.UUID
 
 import cats.effect.IO
-import com.dawidkubicki.haiku.model.{HaikuData, HaikuId, Language}
+import com.dawidkubicki.haiku.model.db.{HaikuData, HaikuId}
+import com.dawidkubicki.haiku.model.Language
 
 trait HaikuRepo {
 
-  def findHaikuData(haikuId: HaikuId): IO[Option[HaikuData]]
+  def find(haikuId: HaikuId): IO[Option[HaikuData]]
 
-  def insertHaiku(haikuId: HaikuId, haiku: String, language: Language): IO[Unit]
+  def insert(haiku: String, language: Language, commandId: UUID): IO[HaikuId]
 
-  def listHaikus(dateFrom: Option[Instant], dateTo: Option[Instant]): IO[List[HaikuData]]
+  def list(dateFrom: Option[Instant], dateTo: Option[Instant]): IO[List[HaikuData]]
 
 }
